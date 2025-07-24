@@ -1,0 +1,43 @@
+Desenvolva um projeto de Web API utilizando C# com .NET Core 8.0, integrando autenticação com Identity, banco de dados com EF Core e Postgres. O projeto deve ser estruturado como Minimal API e seguir os princípios SOLID e padrões de melhores práticas em desenvolvimento C#.
+
+### Configuração Inicial
+
+-   Configure o .NET Core 8.0 como Minimal API.
+-   Implemente autenticação utilizando Identity com Identity Framework, incluindo todas as funcionalidades, como por exemplo, Registro, Login, Logout e recuperação de senha.
+
+### Banco de Dados
+
+1.  Utilize o EF Core para operações de banco de dados.
+2.  Crie as entidades principais e configure o contexto do banco de dados para Postgres.
+3. Inclua uma conta de administrador na Migration para o e-mail "murilo.parra@gmail.com" e senha "admin@123!"
+
+### Endpoints
+
+Implemente os seguintes endpoints e certifique-se de que estejam documentados via annotations e visíveis no Swagger UI:
+
+1.  **Autenticação**:
+        -   `POST /register` - Registrar novo usuário
+        -   `POST /login` - Autenticar usuário
+        -   `POST /logout` - Encerrar sessão do usuário
+        -   `POST /forget-password` - Iniciar recuperação de senha
+        -   `POST /reset-password` - Resetar senha do usuário
+2.  **CRUD básico** (para exemplificar):
+        -   `POST /user` - Criar novo usuário (se aplicável)
+        -   `GET /users` - Listar usuários (com paginação e filtros, se necessário)
+        -   `GET /user/{id}` - Obter usuário por ID
+        -   `DELETE /user/{id}` - Remover usuário por ID
+
+### Requisitos
+
+1.  **Swagger/OpenAPI**: Configure o Swagger para documentar a API e fornecer instruções claras de como interagir com cada endpoint, parâmetros esperados, formatos de requisição/resposta, e exemplos. O Swagger deve estar totalmente configurado e pronto para teste dos endpoints implementados.
+2.  **Autenticação e Autorização**: Utilize tokens JWT para autenticação. Configure as políticas de autorização conforme necessário para cada endpoint.
+
+### Diretrizes
+
+1.  Use injeção de dependência para fornecer instâncias de serviços e repositórios.
+2.  Siga as melhores práticas de desenvolvimento, como tratamento adequado de exceções e validações.
+3.  Documente o projeto de forma que seja fácil para outro profissional entender e dar continuidade.
+
+### Resultado Esperado
+
+O projeto deve ser entregue como um repositório Git, completo, compilável e com instruções de como executá-lo localmente. O Swagger deve estar totalmente funcional, documentado e pronto para ser consumido pelo cliente (web, mobile, etc.), servindo como base para a construção do cliente.
