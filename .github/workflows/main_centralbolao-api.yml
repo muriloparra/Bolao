@@ -20,9 +20,15 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read #This is required for actions/checkout
+    environment: Release
 
     steps:
       - uses: actions/checkout@v4
+  
+      - name: Login to Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
@@ -40,7 +46,6 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_API_NAME }}
           slot-name: 'release'
-          publish-profile: ${{ secrets.AZURE_CREDENTIALS }}
           package: ${{ env.API_PUBLISH_PATH }}
 
       - name: Build and Publish Web App
@@ -51,13 +56,7 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_WEB_NAME }}
           slot-name: 'release'
-          publish-profile: ${{ secrets.AZURE_CREDENTIALS }}
           package: ${{ env.WEB_PUBLISH_PATH }}
-
-      - name: Login to Azure CLI
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Set Web App API URL in Application Settings
         run: |
