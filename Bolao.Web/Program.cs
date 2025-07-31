@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Bolao.Web;
@@ -8,7 +7,8 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5000/") });
+// Fix: Use builder.Configuration to access configuration settings
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? throw new KeyNotFoundException()) });
 builder.Services.AddScoped<AuthService>();
 
 var app = builder.Build();
