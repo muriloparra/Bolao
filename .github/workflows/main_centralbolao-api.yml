@@ -10,8 +10,8 @@ env:
   AZURE_WEBAPP_WEB_NAME: centralbolao-web # Substitua pelo nome do seu App Service do Web App
   AZURE_RESOURCE_GROUP: bolao # Substitua pelo nome do seu Grupo de Recursos
 
-  API_PROJECT_PATH: 'Bolao/Bolao.API/Bolao.API.csproj' # Caminho relativo para o .csproj da API
-  WEB_PROJECT_PATH: 'Bolao/Bolao.Web/Bolao.Web.csproj' # Caminho relativo para o .csproj do Web App
+  API_PROJECT_PATH: './Bolao.API/Bolao.API.csproj' # Caminho relativo para o .csproj da API
+  WEB_PROJECT_PATH: './Bolao.Web/Bolao.Web.csproj' # Caminho relativo para o .csproj do Web App
   API_PUBLISH_PATH: './api_publish' # Pasta para publicar os artefatos da API
   WEB_PUBLISH_PATH: './web_publish' # Pasta para publicar os artefatos do Web App
 
@@ -30,7 +30,7 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Restore dependencies
-        run: dotnet restore ./Bolao/Bolao.sln
+        run: dotnet restore Bolao.sln
 
       - name: Build and publish API
         run: dotnet publish ${{ env.API_PROJECT_PATH }} -c Release -o ${{ env.API_PUBLISH_PATH }}
