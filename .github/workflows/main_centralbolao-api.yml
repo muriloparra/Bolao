@@ -30,7 +30,7 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Restore dependencies
-        run: dotnet restore CentralBolao.sln
+        run: dotnet restore ./CentralBolao/CentralBolao.sln
 
       - name: Build and publish API
         run: dotnet publish ${{ env.API_PROJECT_PATH }} -c Release -o ${{ env.API_PUBLISH_PATH }}
