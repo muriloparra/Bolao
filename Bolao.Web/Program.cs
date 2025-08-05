@@ -7,7 +7,13 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5001") });
+var apiBaseUrl = builder.Configuration["ApiSettings:ApiBaseUrl"];
+if (string.IsNullOrEmpty(apiBaseUrl))
+{
+    Console.WriteLine("Erro: ApiBaseUrl não configurada em appsettings!");
+}
+
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiBaseUrl) });
 builder.Services.AddScoped<AuthService>();
 
 var app = builder.Build();
