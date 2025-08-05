@@ -39,13 +39,13 @@
         
         if (!AuthService.IsAuthenticated)
         {
-            Navigation.NavigateTo("/");
+            Navigation.NavigateTo("/login");
         }
     }
 
     private async Task HandleLogout()
     {
         await AuthService.LogoutAsync();
-        Navigation.NavigateTo("/");
+        Navigation.NavigateTo("/login");
     }
 }

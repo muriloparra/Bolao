@@ -13,7 +13,7 @@ if (string.IsNullOrEmpty(apiBaseUrl))
     Console.WriteLine("Erro: ApiBaseUrl não configurada em appsettings!");
 }
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiBaseUrl) });
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiBaseUrl ?? "https://localhost:5001") });
 builder.Services.AddScoped<AuthService>();
 
 var app = builder.Build();
