@@ -1,0 +1,51 @@
+
+@page "/dashboard"
+@using Bolao.Web.Services
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Dashboard</PageTitle>
+
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+        <div class="text-center">
+            <h1 class="text-2xl font-bold text-gray-900 mb-6">
+                Bem-vindo ao Dashboard!
+            </h1>
+            
+            <div class="space-y-4">
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                    <p class="font-semibold">Usuário logado com sucesso!</p>
+                </div>
+                
+                <div class="text-left">
+                    <p class="text-gray-700"><strong>Nome:</strong> @AuthService.CurrentUser?.Name</p>
+                    <p class="text-gray-700"><strong>E-mail:</strong> @AuthService.CurrentUser?.Email</p>
+                </div>
+                
+                <button @onclick="HandleLogout"
+                        class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Sair
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.InitializeAsync();
+        
+        if (!AuthService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/");
+        }
+    }
+
+    private async Task HandleLogout()
+    {
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo("/");
+    }
+}

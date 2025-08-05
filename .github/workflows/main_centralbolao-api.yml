@@ -1,0 +1,68 @@
+name: Build and deploy ASP.Net Core app to Azure Web App - Central Bolao
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AZURE_WEBAPP_API_NAME: centralbolao-api # Substitua pelo nome do seu App Service da API
+  AZURE_WEBAPP_WEB_NAME: centralbolao-web # Substitua pelo nome do seu App Service do Web App
+  AZURE_RESOURCE_GROUP: bolao # Substitua pelo nome do seu Grupo de Recursos
+
+  API_PROJECT_PATH: './Bolao.API/Bolao.API.csproj' # Caminho relativo para o .csproj da API
+  WEB_PROJECT_PATH: './Bolao.Web/Bolao.Web.csproj' # Caminho relativo para o .csproj do Web App
+  API_PUBLISH_PATH: './api_publish' # Pasta para publicar os artefatos da API
+  WEB_PUBLISH_PATH: './web_publish' # Pasta para publicar os artefatos do Web App
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read #This is required for actions/checkout
+    environment: Release
+
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Login to Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: Restore dependencies
+        run: dotnet restore Bolao.sln
+
+      - name: Build and publish API
+        run: dotnet publish ${{ env.API_PROJECT_PATH }} -c Release -o ${{ env.API_PUBLISH_PATH }}
+
+      - name: Deploy API to Azure App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_API_NAME }}
+          package: ${{ env.API_PUBLISH_PATH }}
+
+      - name: Build and Publish Web App
+        run: dotnet publish ${{ env.WEB_PROJECT_PATH }} -c Release -o ${{ env.WEB_PUBLISH_PATH }}
+
+      - name: Deploy Web App to Azure App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_WEB_NAME }}
+          package: ${{ env.WEB_PUBLISH_PATH }}
+
+      - name: Set Web App API URL in Application Settings
+        run: |
+          #API_FULL_URL="https://${{ env.AZURE_WEBAPP_API_NAME }}.azurewebsites.net"
+          API_FULL_URL="https://centralbolao-api-gqe8b2h7cdakh8de.brazilsouth-01.azurewebsites.net"
+          echo "Definindo ApiBaseUrl para o Web App como: $API_FULL_URL"
+          az webapp config appsettings set --name ${{ env.AZURE_WEBAPP_WEB_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --settings ApiBaseUrl=$API_FULL_URL
+        shell: bash
+
+      - name: Logout from Azure CLI
+        run: az logout
