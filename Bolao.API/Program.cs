@@ -12,19 +12,24 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add CORS
+var configuration = builder.Configuration;
+configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazorApp",
         builder =>
         {
-            builder.WithOrigins("https://localhost:59027", "http://localhost:59028")
+            builder.WithOrigins(configuration.GetValue<string>("WebOriginsUrl") 
+                ?? throw new ApplicationException("CORS policy origins not configured"))
                    .AllowAnyHeader()
                    .AllowAnyMethod();
         });
 });
 
-// Add services
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite("Data Source=app.db"));
 
@@ -41,7 +46,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-var jwtKey = "your-super-secret-jwt-key-that-should-be-at-least-32-characters-long";
+var jwtKey = "minha-chave-super-secreta-que-precisa-ser-bem-longa";
 var key = Encoding.UTF8.GetBytes(jwtKey);
 
 builder.Services.AddAuthentication(options =>
@@ -70,9 +75,9 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Identity API",
+        Title = "Multi Identity API",
         Version = "v1",
-        Description = "Web API com autenticação Identity e JWT"
+        Description = "API com autenticação Identity e JWT"
     });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -89,7 +94,7 @@ builder.Services.AddSwaggerGen(c =>
            {
                new OpenApiSecurityScheme
                {
-                   Reference = new OpenApiReference // Fix: Use OpenApiReference from Microsoft.OpenApi.Models
+                   Reference = new OpenApiReference
                    {
                        Type = ReferenceType.SecurityScheme,
                        Id = "Bearer"
@@ -109,12 +114,14 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 app.UseCors("AllowBlazorApp");
 
-if (app.Environment.IsDevelopment())
+var enableSwaggerInProduction = builder.Configuration.GetValue<bool>("EnableSwaggerInProduction");
+
+if (app.Environment.IsDevelopment() || enableSwaggerInProduction)
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Identity API V1");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Multi Identity API V1");
         c.RoutePrefix = string.Empty;
     });
     app.UseDeveloperExceptionPage();
@@ -242,6 +249,7 @@ app.Run();
 
 static async Task SeedAdminUser(UserManager<ApplicationUser> userManager)
 {
+    //TODO: Passar esses dados via configuração ou variável de ambiente no Azure ou Github
     const string adminEmail = "murilo.parra@gmail.com";
     const string adminPassword = "Admin@123!";
 
