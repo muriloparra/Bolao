@@ -55,7 +55,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_WEB_NAME }}
-          package: ${{ env.WEB_PUBLISH_PATH }}
+          package: ${{ env.WEB_PUBLISH_PATH }}/wwwroot
 
       # - name: Set Web App API URL in Application Settings
       #   run: |
