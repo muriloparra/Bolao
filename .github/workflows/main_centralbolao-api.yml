@@ -41,10 +41,7 @@ jobs:
 
       - name: Build and publish API
         run: dotnet publish ${{ env.API_PROJECT_PATH }} -c Release -o ${{ env.API_PUBLISH_PATH }}
-
-      - name: List API Published Files (Diagnostic)
-        run: ls -R ${{ env.API_PUBLISH_PATH }}
-
+        
       - name: Deploy API to Azure App Service
         uses: azure/webapps-deploy@v2
         with:
@@ -53,22 +50,19 @@ jobs:
 
       - name: Build and Publish Web App
         run: dotnet publish ${{ env.WEB_PROJECT_PATH }} -c Release -o ${{ env.WEB_PUBLISH_PATH }}
-
-      - name: List Web App Published Files (Diagnostic)
-        run: ls -R ${{ env.WEB_PUBLISH_PATH }}
-
+        
       - name: Deploy Web App to Azure App Service
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_WEB_NAME }}
           package: ${{ env.WEB_PUBLISH_PATH }}
 
-      - name: Set Web App API URL in Application Settings
-        run: |
-          API_FULL_URL="https://centralbolao-api-gqe8b2h7cdakh8de.brazilsouth-01.azurewebsites.net"
-          echo "Definindo ApiBaseUrl para o Web App como: $API_FULL_URL"
-           az webapp config appsettings set --name ${{ env.AZURE_WEBAPP_WEB_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --settings ApiSettings:ApiBaseUrl=$API_FULL_URL
-        shell: bash
+      # - name: Set Web App API URL in Application Settings
+      #   run: |
+      #     API_FULL_URL="https://centralbolao-api-gqe8b2h7cdakh8de.brazilsouth-01.azurewebsites.net"
+      #     echo "Definindo ApiBaseUrl para o Web App como: $API_FULL_URL"
+      #      az webapp config appsettings set --name ${{ env.AZURE_WEBAPP_WEB_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --settings ApiSettings:ApiBaseUrl=$API_FULL_URL
+      #   shell: bash
 
       - name: Logout from Azure CLI
         run: az logout
