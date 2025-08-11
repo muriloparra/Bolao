@@ -7,13 +7,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-var apiBaseUrl = builder.Configuration["ApiSettings:ApiBaseUrl"];
-if (string.IsNullOrEmpty(apiBaseUrl))
-{
-    Console.WriteLine("Erro: ApiBaseUrl não configurada em appsettings!");
-}
-
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiBaseUrl ?? "https://localhost:5001") });
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://centralbolao-api-gqe8b2h7cdakh8de.brazilsouth-01.azurewebsites.net") });
 builder.Services.AddScoped<AuthService>();
 
 var app = builder.Build();
