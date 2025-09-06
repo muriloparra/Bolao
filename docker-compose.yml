@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # Serviço do Banco de Dados
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=KfZi!c-<hMjW<j)TAy|5
+      - MYSQL_DATABASE=microsass_db
+      - MYSQL_USER=app00
+      - MYSQL_PASSWORD=LncW$1%r?!TGE:93K4rg
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    networks:
+      - microsass_network
+
+  # Serviço da API
+  api:
+    image: ${DOCKER_REGISTRY-}microsass-api
+    restart: always
+    build:
+      context: ./MicroSASS.API
+      dockerfile: Dockerfile
+    ports:
+      - 7777:80
+      - 7778:443
+    networks:
+      - microsass_network
+    depends_on:
+      - db
+    environment:
+      ConnectionStrings__DefaultConnection: "server=db;port=3306;database=microsass_db"
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Serviço do Frontend
+  web:
+    image: ${DOCKER_REGISTRY-}microsass-web
+    restart: always
+    build:
+      context: ./MicroSASS.Web
+      dockerfile: Dockerfile
+    ports:
+      - 8888:80
+      - 8889:443
+    networks:
+      - microsass_network
+    depends_on:
+      - db
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+# Volumes nomeados para persistência de dados
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  microsass_network:
+    driver: bridge
